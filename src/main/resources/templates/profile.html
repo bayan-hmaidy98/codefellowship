@@ -1,25 +1,46 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
-
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org">
 <head>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+          integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+
     <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>User's Page</title>
+
+    <title>Profile Page</title>
 </head>
 <body>
-<div th:if="${user != null}">
-    <h2>This is <span th:text=${user.userName}></span>'s page</h2>
-    <p>Profile picture: </p>
-    <p>Username: <span th:text=${user.userName}></span></p>
-    <p>FName: <span th:text=${user.firstName}></span></p>
-    <p>LName: <span th:text=${user.lastName}></span></p>
-    <p>Date Of Birth: <span th:text=${user.dateOfBirth}></span></p>
-    <p>Bio: <span th:text=${user.bio}></span></p>
-</div>
-<div th:unless="${user != null}">
-    <h2>not exist the user</h2>
-</div>
 
+<p style="color:green"> PROFILE PAGE </p>
+<h1 th:text="${users.username}"></h1>
+
+<form th:action="@{/posts}" method="get">
+    <div class="card" style="width: 18rem;">
+        <img class="card-img-top" src="https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png"
+             alt="Card image cap">
+        <div class="card-body">
+            <h5 class="card-title">Profile Card</h5>
+            <p th:text="${users.username}" class="card-text"></p>
+            <p th:text="${users.firstName}" class="card-text"></p>
+            <p th:text="${users.lastName}" class="card-text"></p>
+            <p th:text="${users.dateOfBirth}" class="card-text"></p>
+            <p th:text="${users.bio}" class="card-text"></p>
+            <button type="submit" th:name="action" th:value="in">Add Post</button>
+        </div>
+    </div>
+</form>
+<div th:each="post:${posts}" class="album">
+    <div class="card" style="width: 18rem;">
+        <div class="card-body">
+            <h5 class="card-title">Post</h5>
+            <p th:text="${post.createdAt}" class="card-text"></p>
+            <h6 th:text="${post.body}" class="card-subtitle mb-2 text-muted"></h6>
+
+        </div>
+    </div>
+</div>
+<form th:action="@{/logout}" method="post">
+    <input type="submit" value="Sign Out"/>
+</form>
 </body>
 </html>
