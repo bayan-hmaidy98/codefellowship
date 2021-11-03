@@ -5,7 +5,9 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 public class AppUser implements UserDetails {
@@ -30,6 +32,22 @@ public class AppUser implements UserDetails {
 
     public Long getId() {
         return id;
+    }
+
+    public void addFollowToUser(AppUser user){
+        this.users.add(user);
+    }
+
+    public void unFollowUser(AppUser user){
+        this.users.remove(user);
+    }
+
+    public boolean isFollowedUser(AppUser user){
+        return this.users.contains(user);
+    }
+
+    public Set<AppUser> getUsers() {
+        return users;
     }
 
     public List<Post> getPosts() {
@@ -80,13 +98,22 @@ public class AppUser implements UserDetails {
         this.lastName = lastName;
         this.bio = bio;
         this.dateOfBirth = dateOfBirth;
-        this.posts = posts;
     }
 
     public AppUser(){
 
     }
 
+
+    @ManyToMany(cascade = CascadeType.ALL)
+    @JoinTable(name = "users_users",
+            joinColumns = {
+                    @JoinColumn(name = "user_id", referencedColumnName = "id",
+                            nullable = false)},
+            inverseJoinColumns = {
+                    @JoinColumn(name = "following_user_id", referencedColumnName = "id",
+                            nullable = false)})
+    private Set<AppUser> users = new HashSet<>();
 
 
     @Override

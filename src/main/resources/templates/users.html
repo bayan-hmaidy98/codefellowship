@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User's Page</title>
+</head>
+<body>
+<div th:if="${isSameUser == false && isFollowed == false }">
+    <form method="POST" th:action="@{/followUser/{username}(username = ${user.username})}">
+        <input type="submit" value="Follow">
+    </form>
+</div>
+<div th:if="${isSameUser == false && isFollowed == true }">
+    <form method="POST" th:action="@{/unfollowUser/{username}(username = ${user.username})}">
+        <input type="submit" value="UnFollow">
+    </form>
+</div>
+<h2>Welcome <span th:text=${username}></span> To User's Details Page..</h2>
+<div th:if="${user != null}">
+    <h2>This is <span th:text=${user.username}></span>'s page</h2>
+    <p>Profile picture: </p>
+    <img src="https://www.computerhope.com/jargon/g/guest-user.jpg" alt="user's image">
+    <p>Username: <span th:text=${user.username}></span></p>
+    <p>First Name: <span th:text=${user.firstName}></span></p>
+    <p>Last Name: <span th:text=${user.lastName}></span></p>
+    <p>Date Of Birth: <span th:text=${user.dateOfBirth}></span></p>
+    <p>Bio: <span th:text=${user.bio}></span></p>
+</div>
+<div th:unless="${user != null}">
+    <h2>Ooops, User Id Is Not Exist..</h2>
+</div>
+
+<h4>
+    <br>
+    <br>
+    <a href="/">Home page</a>
+    <br>
+    <a href="/perform_logout">Logout</a>
+</h4>
+
+</body>
+</html>
