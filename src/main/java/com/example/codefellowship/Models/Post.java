@@ -28,7 +28,7 @@ public class Post {
     @JoinColumn(name="user_id")
     private AppUser user;
 
-    public Post() {
+    public Post(String body, AppUser user) {
     }
 
     public Post(String body) {

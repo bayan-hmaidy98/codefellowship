@@ -63,20 +63,12 @@ public class AppUserController {
     public String getProfilePage(Model model) {
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         AppUser user = appUserRepo.findByUserName(userDetails.getUsername());
-        List<Post> list = postRepo.findAllByUserId(user.getId()).orElseThrow();
+        List<Post> list = postRepo.findAllByUserId(user.getId());
         model.addAttribute("users", user);
         model.addAttribute("posts", list);
         return "profile";
     }
 
-    @GetMapping("/posts")
-    public String getPosts(@ModelAttribute Post posts, Model model){
-        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        List<Post> post = postRepo.findAllByUser_Username(userDetails.getUsername()).orElseThrow();
-        model.addAttribute("posts", post);
-
-        return "post";
-    }
 
     @PostMapping("/posts")
     public RedirectView addPosts(@ModelAttribute Post posts) {
@@ -89,14 +81,43 @@ public class AppUserController {
         return new RedirectView("/profile") ;
     }
 
-    @GetMapping("/profile/{id}")
-    public String getProfilePageById(@PathVariable String id , Model model) {
-        long Id = Long.parseLong(id);
-        AppUser user = appUserRepo.findAppUserById(Id);
-        List<Post> list = postRepo.findAllByUserId(user.getId()).orElseThrow();
-        model.addAttribute("user", user);
-        model.addAttribute("posts", list);
-        return "oneUser";
+    @GetMapping("/users/{id}")
+    public String getUser(Principal p,Model m, @PathVariable long id){
+        try {
+            String username = p.getName();
+            AppUser currentUser = appUserRepo.findByUserName(username);
+            AppUser user = appUserRepo.findById((int) id).get();
+            System.out.println(currentUser.getUsers());
+            boolean isFollowed = currentUser.isFollowedUser(user);
+            boolean isSameUser = false;
+            if(username.equals(user.getUsername()))
+                isSameUser = true;
+            m.addAttribute("user", user);
+            m.addAttribute("isSameUser", isSameUser);
+            m.addAttribute("username", username);
+            m.addAttribute("isFollowed", isFollowed);
+            return "users";
+        }
+        catch(Exception e){
+            return "users";
+        }
+    }
+
+    @PostMapping("/followUser/{username}")
+    public RedirectView followUser(Principal p,@PathVariable String username){
+        AppUser currentUser = appUserRepo.findByUserName(p.getName());
+        AppUser userWantedToFollow = appUserRepo.findByUserName(username);
+        currentUser.addFollowToUser(userWantedToFollow);
+        appUserRepo.save(currentUser);
+        return new RedirectView("/users/"+userWantedToFollow.getId());
+    }
+    @PostMapping("/unfollowUser/{username}")
+    public RedirectView unFollow(Principal p,@PathVariable String username){
+        AppUser currentUser = appUserRepo.findByUserName(p.getName());
+        AppUser userWantedToUnFollow = appUserRepo.findByUserName(username);
+        currentUser.unFollowUser(userWantedToUnFollow);
+        appUserRepo.save(currentUser);
+        return new RedirectView("/users/"+userWantedToUnFollow.getId());
     }
 }
 
